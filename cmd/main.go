@@ -45,6 +45,7 @@ func main() {
 	wait_for_sig := <-sigChan
 	product_logger.Println("RECEIVED TERMINATE, Graceful shutdown", wait_for_sig)
 
-	ctx, _ := context.WithTimeout(context.Background(), time.Duration(30)*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(30)*time.Second)
+	defer cancel()
 	server.Shutdown(ctx)
 }
