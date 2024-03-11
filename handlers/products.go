@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Manas8803/learn-microservice/product-api/data"
+	"github.com/Manas8803/learn-microservice-product-api/data"
 )
 
 // * Products is a struct representing the handler for managing products.

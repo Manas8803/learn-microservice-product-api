@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Manas8803/learn-microservice/product-api/handlers"
+	"github.com/Manas8803/learn-microservice-product-api/handlers"
 )
 
 var port_addr string = ":9020"
