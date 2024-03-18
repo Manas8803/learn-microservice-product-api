@@ -12,10 +12,10 @@ import (
 	"github.com/Manas8803/learn-microservice-product-api/handlers"
 )
 
-var port_addr string = ":9020"
+var port_addr string = "9020"
 
 func main() {
-	product_logger := log.New(os.Stdout, "products-api", log.LstdFlags)
+	product_logger := log.New(os.Stdout, "/products-api - ", log.LstdFlags)
 
 	ph := handlers.NewProducts(product_logger)
 
@@ -23,7 +23,7 @@ func main() {
 	sm.Handle("/", ph)
 
 	server := http.Server{
-		Addr:         port_addr,
+		Addr:         ":" + port_addr,
 		Handler:      ph,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,
@@ -31,9 +31,11 @@ func main() {
 	}
 
 	go func() {
+		product_logger.Println("Server Started on PORT : " + port_addr)
 		err := server.ListenAndServe()
 		if err != nil {
 			log.Fatal(err)
+			return
 		}
 	}()
 
@@ -43,7 +45,7 @@ func main() {
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
 	wait_for_sig := <-sigChan
-	product_logger.Println("RECEIVED TERMINATE, Graceful shutdown", wait_for_sig)
+	product_logger.Println("\n--------------------------------------------------------------------------------\nRECEIVED TERMINATE SIGNAL, Graceful shutdown\n--------------------------------------------------------------------------------\n", wait_for_sig)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(30)*time.Second)
 	defer cancel()

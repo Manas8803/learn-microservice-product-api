@@ -1,6 +1,8 @@
 package data
 
 import (
+	"encoding/json"
+	"io"
 	"time"
 )
 
@@ -10,9 +12,24 @@ type Product struct {
 	Description string  `json:"description"`
 	Price       float32 `json:"price"`
 	SKU         string  `json:"sku"`
-	CreatedOn   string  `json:"created_on"`
-	UpdatedOn   string  `json:"updated_on"`
-	DeletedOn   string  `json:"deleted_on"`
+	CreatedOn   string  `json:"-"` //* Note here I have completely removed it from the output.
+	UpdatedOn   string  `json:"-"`
+	DeletedOn   string  `json:"-"`
+}
+
+type Products []*Product
+
+// * ToJson method converts all the products that are already existing or all the rows for each product and encodes them into json array that why we have used "Products" instead of "Product".
+// * Also encode-decode is faster in comparison to marshal-unmarshal.
+func (p *Products) ToJson(w io.Writer) error {
+	enc := json.NewEncoder(w)
+	return enc.Encode(p)
+}
+
+// * FromJson method adds a product to the list of already existing products so it takes "Product" instead of "Products" as a parameter.
+func (p *Product) FromJson(r io.Reader) error {
+	dec := json.NewDecoder(r)
+	return dec.Decode(p)
 }
 
 var productList = []*Product{
@@ -38,6 +55,16 @@ var productList = []*Product{
 	},
 }
 
-func GetProducts() []*Product {
+func getNextID() int {
+	p := productList[len(productList)-1]
+	return p.ID + 1
+}
+
+func GetProducts() Products {
 	return productList
+}
+
+func AddProduct(p *Product) {
+	p.ID = getNextID()
+	productList = append(productList, p)
 }
